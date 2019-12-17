@@ -30,7 +30,7 @@ Run using pytorch 1.2 on VISDA and UCM and AID dataset
 ## Train
 ```
 CUDA_VISIBLE_DEVICES=$GPU_ID python trainer_osda.py --net vgg --source_path SOURCE \
-    --target_path TARGET --dataset VISDA/UCM/AID --train
+    --target_path TARGET --dataset VISDA/UCM/AID --train --save
 ```
 ## Test
 ```

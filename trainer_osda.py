@@ -7,7 +7,7 @@ import torchvision.transforms as transforms
 from data_loader.get_loader import get_loader
 import numpy as np
 import os
-
+from operator import xor
 # Training settings
 parser = argparse.ArgumentParser(description='PyTorch Openset DA')
 parser.add_argument('--batch-size', type=int, default=32, metavar='N',
@@ -38,11 +38,15 @@ parser.add_argument('--no_cuda', action='store_true', default=False,
                     help='disable cuda')
 parser.add_argument('--model_path', type=str,metavar='B',
                     help='Model path')
+parser.add_argument('--train', action='store_true', default=False,
+                    help='Train the model')
+parser.add_argument('--test', action='store_true', default=False,
+                    help='Test the model')
 parser.add_argument('--dataset', type=str,metavar='B',
                     help='dataset name')
 args = parser.parse_args()
 args.cuda = not args.no_cuda and torch.cuda.is_available()
-
+assert xor(args.train, args.test)
 source_data = args.source_path
 target_data = args.target_path
 evaluation_data = args.target_path
@@ -194,6 +198,7 @@ def test(load=False):
     for ind, category in enumerate(class_list):
         print('%s:%s' % (category, per_class_acc[ind]))
 
-
-train(args.epochs + 1)
-#test(True)
+if args.train:
+    train(args.epochs + 1)
+if args.test:
+    test(True)

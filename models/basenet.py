@@ -53,7 +53,7 @@ class AlexBase(nn.Module):
         model_ft = models.alexnet(pretrained=True)
         mod = []
         print(model_ft)
-        for i in xrange(18):
+        for i in range(18):
             if i < 13:
                 mod.append(model_ft.features[i])
         mod_upper = list(model_ft.classifier.children())

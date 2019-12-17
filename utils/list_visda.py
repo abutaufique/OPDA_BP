@@ -1,6 +1,6 @@
 import os
 import random
-p_path = os.path.join('path to visda','train')
+p_path = os.path.join('/home/at7133/Research/Domain_adaptation/dataset/data-visda-2017/data','train')
 dir_list = os.listdir(p_path)
 print(dir_list)
 
@@ -19,7 +19,7 @@ for k, direc in enumerate(dir_list):
                 write_source.write('%s %s\n' % (file_name, class_list.index(class_name)))
             else:
                 continue
-p_path = os.path.join('path to visda','validation')
+p_path = os.path.join('/home/at7133/Research/Domain_adaptation/dataset/data-visda-2017/data','validation')
 dir_list = os.listdir(p_path)
 print(dir_list)
 for k, direc in enumerate(dir_list):

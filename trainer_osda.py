@@ -12,7 +12,7 @@ import os
 parser = argparse.ArgumentParser(description='PyTorch Openset DA')
 parser.add_argument('--batch-size', type=int, default=32, metavar='N',
                     help='input batch size for training (default: 64)')
-parser.add_argument('--epochs', type=int, default=1000, metavar='N',
+parser.add_argument('--epochs', type=int, default=100, metavar='N',
                     help='number of epochs to train (default: 10)')
 parser.add_argument('--log-interval', type=int, default=100, metavar='N',
                     help='how many batches to wait before logging training status')
@@ -22,7 +22,7 @@ parser.add_argument('--net', type=str, default='resnet152', metavar='B',
                     help='which network alex,vgg,res?')
 parser.add_argument('--save', action='store_true', default=False,
                     help='save model or not')
-parser.add_argument('--save_path', type=str, default='checkpoint/checkpoint', metavar='B',
+parser.add_argument('--save_path', type=str, default='checkpoint/', metavar='B',
                     help='checkpoint path')
 parser.add_argument('--source_path', type=str, default='./utils/source_list.txt', metavar='B',
                     help='checkpoint path')
@@ -36,7 +36,10 @@ parser.add_argument('--update_lower', action='store_true', default=False,
                     help='update lower layer or not')
 parser.add_argument('--no_cuda', action='store_true', default=False,
                     help='disable cuda')
-
+parser.add_argument('--model_path', type=str,metavar='B',
+                    help='Model path')
+parser.add_argument('--dataset', type=str,metavar='B',
+                    help='dataset name')
 args = parser.parse_args()
 args.cuda = not args.no_cuda and torch.cuda.is_available()
 
@@ -75,8 +78,15 @@ train_loader, test_loader = get_loader(source_data, target_data, evaluation_data
 dataset_train = train_loader.load_data()
 dataset_test = test_loader
 
-num_class = 7
-class_list = ["bicycle", "bus", "car", "motorcycle", "train", "truck", "unk"]
+if args.dataset == 'VISDA':
+    num_class = 7
+    class_list = ["bicycle", "bus", "car", "motorcycle", "train", "truck", "unk"]
+elif args.dataset in ['UCM', 'AID']:
+    num_class = 6
+    class_list = ["baseballdiamond", "beach", "mediumresidential", "parkinglot", \
+           "sparseresidential", "unkn"]
+else:
+    raise NotImplementedError('Dataset not implemented. Use VISDA or UCM or AID')
 # ['airplane', 'bicycle', 'bus', 'car', 'horse', 'knife', 'motorcycle',
 # 'person', 'plant', 'skateboard', 'train', 'truck', 'unk']
 G, C = get_model(args.net, num_class=num_class, unit_size=args.unit_size)
@@ -137,7 +147,7 @@ def train(num_epoch):
             if batch_idx % args.log_interval == 0:
                 print('Train Ep: {} [{}/{} ({:.0f}%)]\tLoss Source: {:.6f}\t Loss Target: {:.6f}'.format(
                     ep, batch_idx * len(data), 70000,
-                        100. * batch_idx / 70000, loss_s.data[0], loss_t.data[0]))
+                        100. * batch_idx / 70000, loss_s.item(), loss_t.item()))
             if ep > 0 and batch_idx % 1000 == 0:
                 test()
                 G.train()
@@ -146,10 +156,12 @@ def train(num_epoch):
         if args.save:
             if not os.path.exists(args.save_path):
                 os.mkdir(args.save_path)
-            save_model(G, C, args.save_path + '_' + str(ep))
+            save_model(G, C, args.save_path + 'checkpoint_' + str(ep))
 
 
-def test():
+def test(load=False):
+    if load:
+        load_model(G, C, args.model_path)
     G.eval()
     C.eval()
     correct = 0
@@ -184,3 +196,4 @@ def test():
 
 
 train(args.epochs + 1)
+#test(True)

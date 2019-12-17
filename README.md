@@ -24,6 +24,19 @@ Network|bicycle  |bus  |car  |motorcycle  |train  |truck |unknown |
 AlexNet |54.3  |76.0  |38.6  |77.8  |71.7  |1.0  |70.6
 VGG |58.4  |69.6  |50.0  |81.3  |81.2  |28.3  |91.7
 
+## ABU
+Run using pytorch 1.2 on VISDA and UCM and AID dataset
+
+## Train
+```
+CUDA_VISIBLE_DEVICES=$GPU_ID python trainer_osda.py --net vgg --source_path SOURCE \
+    --target_path TARGET --dataset VISDA/UCM/AID --train
+```
+## Test
+```
+CUDA_VISIBLE_DEVICES=$GPU_ID python trainer_osda.py --net vgg --source_path SOURCE.txt \
+    --target_path TARGET.txt --dataset VISDA/UCM/AID --model_path CHECKPOINT --test
+```
 ## Citation
 Please cite the following reference if you utilize this repository for your project.
 
